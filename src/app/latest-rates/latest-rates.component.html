@@ -1,1 +1,21 @@
-<p>latest-rates works!</p>
+<table *ngIf="latestRates">
+  <tr>
+    <th>Currency</th>
+    <th>Spot</th>
+    <th>Increase / Decrease</th>
+    <th>Chart</th>
+  </tr>
+
+  <tr *ngFor="let currency of currencies">
+    <td>{{ currency }}</td>
+    <td>{{ latestRates.rates[currency] }}</td>
+    <td>
+      <ng-container *ngIf="latestRates.yesterdayRates">
+        <img class='state-icon' [src]="getRateStateImageSrc(currency)" alt="">
+      </ng-container>
+    </td>
+    <td>
+      <img class="graph-icon" src="assets/icons/graph-icon.png" alt="">
+    </td>
+  </tr>
+</table>
