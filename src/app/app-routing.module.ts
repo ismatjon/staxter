@@ -3,6 +3,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { LatestRatesComponent } from './latest-rates/latest-rates.component';
 import { LastThirtyDaysComponent } from './last-thirty-days/last-thirty-days.component';
 import { TopFiveComponent } from './top-five/top-five.component';
+import { HistoricalChartComponent } from './historical-chart/historical-chart.component';
 
 const routes: Routes = [
   {
@@ -21,6 +22,10 @@ const routes: Routes = [
   {
     path: 'top-five',
     component: TopFiveComponent
+  },
+  {
+    path: 'historical-chart/:currency',
+    component: HistoricalChartComponent
   }
 ];
 

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { DailyRates, MonthlyRates } from './rates';
 import { Base, BaseList } from './base';
+import { Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +12,8 @@ export class RatesService {
   latestRates: DailyRates;
   thirtyDaysRates: MonthlyRates;
   currentBase: Base = BaseList.find(b => b.code === 'EUR');
+
+  monthlyRatesUpdated = new Subject();
 
   get params() {
     return { params: { base: this.currentBase.code } };
@@ -26,6 +29,21 @@ export class RatesService {
   getRates() {
     this.getLatestRates();
     this.getLastThirtyDaysRates();
+  }
+
+  getMonthlyRatesByCurrency(currency: string) {
+    if (!this.thirtyDaysRates) {
+      return;
+    }
+
+    const monthlyRates = this.thirtyDaysRates.rates;
+    const rates = {};
+    for (const date in monthlyRates) {
+      if (monthlyRates.hasOwnProperty(date)) {
+        rates[date] = monthlyRates[date][currency];
+      }
+    }
+    return rates;
   }
 
   getLatestRates() {
@@ -45,6 +63,7 @@ export class RatesService {
       .subscribe(data => {
         this.thirtyDaysRates = new MonthlyRates(data);
         this.getYesterdayRates();
+        this.monthlyRatesUpdated.next();
       });
   }
 

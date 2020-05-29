@@ -11,11 +11,13 @@
     <td>{{ latestRates.rates[currency] }}</td>
     <td>
       <ng-container *ngIf="latestRates.yesterdayRates">
-        <img class='state-icon' [src]="getRateStateImageSrc(currency)" alt="">
+        <img class="state-icon" [src]="getRateStateImageSrc(currency)" alt="" />
       </ng-container>
     </td>
     <td>
-      <img class="graph-icon" src="assets/icons/graph-icon.png" alt="">
+      <a [routerLink]="'/historical-chart/' + currency">
+        <img class="graph-icon" src="assets/icons/graph-icon.png" alt="" />
+      </a>
     </td>
   </tr>
 </table>
