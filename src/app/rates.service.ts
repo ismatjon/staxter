@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { DailyRates, MonthlyRates } from './rates';
+import { Base, BaseList } from './base';
 
 @Injectable({
   providedIn: 'root'
@@ -9,8 +10,18 @@ export class RatesService {
   baseUrl = 'https://api.exchangeratesapi.io/';
   latestRates: DailyRates;
   thirtyDaysRates: MonthlyRates;
+  currentBase: Base = BaseList.find(b => b.code === 'EUR');
+
+  get params() {
+    return { params: { base: this.currentBase.code } };
+  }
 
   constructor(private http: HttpClient) {}
+
+  changeBase(base: Base) {
+    this.currentBase = base;
+    this.getRates();
+  }
 
   getRates() {
     this.getLatestRates();
@@ -18,7 +29,7 @@ export class RatesService {
   }
 
   getLatestRates() {
-    this.http.get(this.baseUrl + 'latest').subscribe(data => {
+    this.http.get(this.baseUrl + 'latest', this.params).subscribe(data => {
       this.latestRates = new DailyRates(data);
       this.getYesterdayRates();
     });
@@ -29,10 +40,12 @@ export class RatesService {
     const date = today.getFullYear() + '-' + (today.getMonth() + 1);
     const lastDay = this.getDaysCount(today.getMonth() + 1, today.getFullYear());
 
-    this.http.get(this.baseUrl + 'history?start_at=' + date + '-1&end_at=' + date + '-' + lastDay).subscribe(data => {
-      this.thirtyDaysRates = new MonthlyRates(data);
-      this.getYesterdayRates();
-    });
+    this.http
+      .get(this.baseUrl + 'history?start_at=' + date + '-1&end_at=' + date + '-' + lastDay, this.params)
+      .subscribe(data => {
+        this.thirtyDaysRates = new MonthlyRates(data);
+        this.getYesterdayRates();
+      });
   }
 
   getYesterdayRates() {

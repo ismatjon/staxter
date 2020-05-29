@@ -3,5 +3,10 @@
 </div>
 
 <div class="content">
+  <div class="base-selector">
+    <label>Base: </label>
+    <p-dropdown [options]="currencies" [(ngModel)]="currentBase" optionLabel="code"></p-dropdown>
+  </div>
+
   <router-outlet></router-outlet>
 </div>

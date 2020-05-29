@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { RatesService } from './rates.service';
+import { Base, BaseList } from './base';
 
 @Component({
   selector: 'app-root',
@@ -7,7 +8,16 @@ import { RatesService } from './rates.service';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  constructor(ratesService: RatesService) {
+  currencies = BaseList;
+
+  get currentBase() {
+    return this.ratesService.currentBase;
+  }
+  set currentBase(base: Base) {
+    this.ratesService.changeBase(base);
+  }
+
+  constructor(private ratesService: RatesService) {
     ratesService.getRates();
   }
 }
