@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { DailyRates, MonthlyRates } from './rates';
 import { Base, BaseList } from './base';
-import { Subject } from 'rxjs';
+import { ReplaySubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +13,7 @@ export class RatesService {
   thirtyDaysRates: MonthlyRates;
   currentBase: Base = BaseList.find(b => b.code === 'EUR');
 
-  monthlyRatesUpdated = new Subject();
+  monthlyRatesUpdated = new ReplaySubject();
 
   get params() {
     return { params: { base: this.currentBase.code } };

@@ -49,13 +49,9 @@ export class HistoricalChartComponent implements OnInit {
     const currency = params.currency;
     this.chartOptions.title.text = currency;
 
-    if (!this.ratesService.thirtyDaysRates) {
-      this.ratesService.monthlyRatesUpdated.pipe(take(1)).subscribe(() => {
-        this.getRatesData(currency);
-      });
-    } else {
+    this.ratesService.monthlyRatesUpdated.pipe(take(1)).subscribe(() => {
       this.getRatesData(currency);
-    }
+    });
   }
 
   getRatesData(currency: string) {
