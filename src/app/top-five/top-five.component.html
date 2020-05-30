@@ -1,1 +1,20 @@
-<p>top-five works!</p>
+<button class="custom-btn" [class.active]="selectedState === 'increase'" (click)="selectedState = 'increase'">
+  Increase
+</button>
+<button class="custom-btn" [class.active]="selectedState === 'decrease'" (click)="selectedState = 'decrease'">
+  Decrease
+</button>
+
+<table *ngIf="top5">
+  <tr>
+    <th>Currency</th>
+    <th>Difference</th>
+    <th>%</th>
+  </tr>
+
+  <tr *ngFor="let diff of top5[selectedState]">
+    <td>{{ diff.currency }}</td>
+    <td>{{ diff.diff }}</td>
+    <td></td>
+  </tr>
+</table>

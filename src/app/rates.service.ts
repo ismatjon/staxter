@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { ReplaySubject } from 'rxjs';
+
 import { DailyRates, MonthlyRates } from './rates';
 import { Base, BaseList } from './base';
-import { ReplaySubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -13,6 +14,8 @@ export class RatesService {
   thirtyDaysRates: MonthlyRates;
   currentBase: Base = BaseList.find(b => b.code === 'EUR');
 
+  dailyRatesUpdated = new ReplaySubject();
+  yesterdayRatesUpdated = new ReplaySubject();
   monthlyRatesUpdated = new ReplaySubject();
 
   get params() {
@@ -50,6 +53,7 @@ export class RatesService {
     this.http.get(this.baseUrl + 'latest', this.params).subscribe(data => {
       this.latestRates = new DailyRates(data);
       this.getYesterdayRates();
+      this.dailyRatesUpdated.next();
     });
   }
 
@@ -75,6 +79,7 @@ export class RatesService {
       const yesterday = dates.length > 1 ? dates[index - 1] : today;
 
       this.latestRates.yesterdayRates = this.thirtyDaysRates.rates[yesterday];
+      this.yesterdayRatesUpdated.next();
     }
   }
 

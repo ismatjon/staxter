@@ -1,0 +1,32 @@
+table {
+  font-size: 14px;
+  border-collapse: collapse;
+}
+
+tr:nth-child(odd) {
+  background-color: #edf4d7;
+}
+
+th {
+  color: #ffffff;
+  background-color: #b0d037;
+}
+
+th,
+td {
+  text-align: center;
+  padding: 20px 30px;
+  border: 1px solid #a4c800;
+}
+
+.state-icon {
+  width: 20px;
+}
+
+.graph-icon {
+  width: 34px;
+}
+
+.custom-btn {
+  margin: 5px;
+}
