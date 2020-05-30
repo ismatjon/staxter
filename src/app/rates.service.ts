@@ -34,7 +34,7 @@ export class RatesService {
     this.getLastThirtyDaysRates();
   }
 
-  getMonthlyRatesByCurrency(currency: string) {
+  getCurrencyRatesOutOfMonthlyRates(currency: string) {
     if (!this.thirtyDaysRates) {
       return;
     }

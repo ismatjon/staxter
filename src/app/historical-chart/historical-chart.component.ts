@@ -55,7 +55,7 @@ export class HistoricalChartComponent implements OnInit {
   }
 
   getRatesData(currency: string) {
-    const rates = this.ratesService.getMonthlyRatesByCurrency(currency);
+    const rates = this.ratesService.getCurrencyRatesOutOfMonthlyRates(currency);
     this.chartData = {
       labels: Object.keys(rates),
       datasets: [
