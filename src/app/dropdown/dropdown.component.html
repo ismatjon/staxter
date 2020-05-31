@@ -1,0 +1,9 @@
+<div class="dropdown">
+  <label>{{ labelText }}: </label>
+  <p-dropdown
+    [options]="options"
+    [ngModel]="value"
+    optionLabel="{{optionLabel}}"
+    (onChange)="onChange($event)"
+  ></p-dropdown>
+</div>

@@ -1,3 +1,11 @@
+<app-dropdown
+  labelText="Base"
+  optionLabel="code"
+  [options]="currencies"
+  [value]="currentBase"
+  (changed)="onDropdownChange($event)"
+></app-dropdown>
+
 <table *ngIf="latestRates">
   <tr>
     <th>Currency</th>
@@ -6,9 +14,9 @@
     <th>Chart</th>
   </tr>
 
-  <tr *ngFor="let currency of currencies">
+  <tr *ngFor="let currency of currencyCodes">
     <td>{{ currency }}</td>
-    <td>{{ latestRates.rates[currency] }}</td>
+    <td>{{ latestRates.rates[currency] | number: '1.2-4' }}</td>
     <td>
       <ng-container *ngIf="latestRates.yesterdayRates">
         <img class="state-icon" [src]="getRateStateImageSrc(currency)" alt="" />

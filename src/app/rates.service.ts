@@ -18,15 +18,21 @@ export class RatesService {
   yesterdayRatesUpdated = new ReplaySubject();
   monthlyRatesUpdated = new ReplaySubject();
 
-  get params() {
-    return { params: { base: this.currentBase.code } };
+  get paramsWithCurrentBase() {
+    return this.generateParam(this.currentBase.code);
   }
 
   constructor(private http: HttpClient) {}
 
-  changeBase(base: Base) {
+  changeBase(base: Base, isComparing = false) {
     this.currentBase = base;
-    this.getRates();
+    if (!isComparing) {
+      this.getRates();
+    }
+  }
+
+  generateParam(base: string) {
+    return { params: { base } };
   }
 
   getRates() {
@@ -43,27 +49,29 @@ export class RatesService {
     const rates = {};
     for (const date in monthlyRates) {
       if (monthlyRates.hasOwnProperty(date)) {
-        rates[date] = monthlyRates[date][currency];
+        const rate = monthlyRates[date][currency] || 0;
+        rates[date] = rate === 0 ? rate : rate.toFixed(4);
       }
     }
     return rates;
   }
 
   getLatestRates() {
-    this.http.get(this.baseUrl + 'latest', this.params).subscribe(data => {
+    this.http.get(this.baseUrl + 'latest', this.paramsWithCurrentBase).subscribe(data => {
       this.latestRates = new DailyRates(data);
       this.getYesterdayRates();
       this.dailyRatesUpdated.next();
     });
   }
 
-  getLastThirtyDaysRates() {
+  getLastThirtyDaysRates(base?: string) {
     const today = new Date();
     const date = today.getFullYear() + '-' + (today.getMonth() + 1);
     const lastDay = this.getDaysCount(today.getMonth() + 1, today.getFullYear());
 
+    const params = base ? this.generateParam(base) : this.paramsWithCurrentBase;
     this.http
-      .get(this.baseUrl + 'history?start_at=' + date + '-1&end_at=' + date + '-' + lastDay, this.params)
+      .get(this.baseUrl + 'history?start_at=' + date + '-1&end_at=' + date + '-' + lastDay, params)
       .subscribe(data => {
         this.thirtyDaysRates = new MonthlyRates(data);
         this.getYesterdayRates();

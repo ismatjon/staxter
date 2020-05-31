@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Base, BaseList } from '../base';
 import { RatesService } from '../rates.service';
 
 @Component({
@@ -7,15 +8,21 @@ import { RatesService } from '../rates.service';
   styleUrls: ['./latest-rates.component.scss']
 })
 export class LatestRatesComponent {
-  constructor(private ratesService: RatesService) {}
+  currencies = BaseList;
+
+  get currentBase() {
+    return this.ratesService.currentBase;
+  }
 
   get latestRates() {
     return this.ratesService.latestRates;
   }
 
-  get currencies() {
+  get currencyCodes() {
     return this.latestRates ? Object.keys(this.latestRates.rates) : [];
   }
+
+  constructor(private ratesService: RatesService) {}
 
   getRateStateImageSrc(currency: string) {
     const todayRate = this.latestRates.rates[currency];
@@ -31,5 +38,9 @@ export class LatestRatesComponent {
     }
 
     return 'assets/icons/' + icon + '.png';
+  }
+
+  onDropdownChange(base: Base) {
+    this.ratesService.changeBase(base);
   }
 }

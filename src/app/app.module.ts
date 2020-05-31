@@ -12,6 +12,7 @@ import { NavigationComponent } from './navigation/navigation.component';
 import { LatestRatesComponent } from './latest-rates/latest-rates.component';
 import { TopFiveComponent } from './top-five/top-five.component';
 import { HistoricalChartComponent } from './historical-chart/historical-chart.component';
+import { DropdownComponent } from './dropdown/dropdown.component';
 
 @NgModule({
   declarations: [
@@ -19,7 +20,8 @@ import { HistoricalChartComponent } from './historical-chart/historical-chart.co
     NavigationComponent,
     LatestRatesComponent,
     TopFiveComponent,
-    HistoricalChartComponent
+    HistoricalChartComponent,
+    DropdownComponent
   ],
   imports: [
     BrowserModule,
