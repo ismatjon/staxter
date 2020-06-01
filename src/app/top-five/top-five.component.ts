@@ -35,12 +35,21 @@ export class TopFiveComponent {
     return diff;
   }
 
+  private getPercent(currency: string) {
+    const yesterdayRate = this.latestRates.yesterdayRates[currency];
+    return (+this.getDiff(currency) * 100) / yesterdayRate;
+  }
+
   getTop5() {
     const diffs = [];
     const { rates } = this.latestRates;
     for (const currency in rates) {
       if (rates.hasOwnProperty(currency)) {
-        diffs.push({ currency, diff: this.getDiff(currency) });
+        diffs.push({
+          currency,
+          diff: this.getDiff(currency),
+          percent: this.getPercent(currency)
+        });
       }
     }
     const arr = diffs.sort((a, b) => a.diff - b.diff);

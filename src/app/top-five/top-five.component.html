@@ -12,9 +12,9 @@
     <th>%</th>
   </tr>
 
-  <tr *ngFor="let diff of top5[selectedState]">
-    <td>{{ diff.currency }}</td>
-    <td>{{ diff.diff }}</td>
-    <td></td>
+  <tr *ngFor="let rate of top5[selectedState]">
+    <td>{{ rate.currency }}</td>
+    <td>{{ rate.diff }}</td>
+    <td>{{ rate.percent | number: '1.2-2' }}</td>
   </tr>
 </table>
