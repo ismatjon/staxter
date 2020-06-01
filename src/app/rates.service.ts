@@ -11,12 +11,13 @@ import { Base, BaseList } from './base';
 export class RatesService {
   baseUrl = 'https://api.exchangeratesapi.io/';
   latestRates: DailyRates;
-  thirtyDaysRates: MonthlyRates;
+  lastMonthRates: MonthlyRates;
   currentBase: Base = BaseList.find(b => b.code === 'EUR');
+  comparingBase: string;
 
-  dailyRatesUpdated = new ReplaySubject();
+  latestRatesUpdated = new ReplaySubject();
   yesterdayRatesUpdated = new ReplaySubject();
-  monthlyRatesUpdated = new ReplaySubject();
+  lastMonthRatesUpdated = new ReplaySubject();
 
   get paramsWithCurrentBase() {
     return this.generateParam(this.currentBase.code);
@@ -37,15 +38,14 @@ export class RatesService {
 
   getRates() {
     this.getLatestRates();
-    this.getLastThirtyDaysRates();
   }
 
   getCurrencyRatesOutOfMonthlyRates(currency: string) {
-    if (!this.thirtyDaysRates) {
+    if (!this.lastMonthRates) {
       return;
     }
 
-    const monthlyRates = this.thirtyDaysRates.rates;
+    const monthlyRates = this.lastMonthRates.rates;
     const rates = {};
     for (const date in monthlyRates) {
       if (monthlyRates.hasOwnProperty(date)) {
@@ -59,36 +59,45 @@ export class RatesService {
   getLatestRates() {
     this.http.get(this.baseUrl + 'latest', this.paramsWithCurrentBase).subscribe(data => {
       this.latestRates = new DailyRates(data);
-      this.getYesterdayRates();
-      this.dailyRatesUpdated.next();
+      this.getLastMonthRates();
+      this.latestRatesUpdated.next();
     });
   }
 
-  getLastThirtyDaysRates(base?: string) {
-    const today = new Date();
+  getLastMonthRates(base?: string) {
+    if (!this.latestRates) {
+      // saving base in order to use it next time the mothod is called
+      this.comparingBase = base;
+      return;
+    }
+
+    const today = new Date(this.latestRates.date);
     const date = today.getFullYear() + '-' + (today.getMonth() + 1);
     const lastDay = this.getDaysCount(today.getMonth() + 1, today.getFullYear());
 
+    base = base || this.comparingBase;
     const params = base ? this.generateParam(base) : this.paramsWithCurrentBase;
+
+    // setting to null because it shouldn't be used after getting rates for comparing chart
+    this.comparingBase = null;
+
     this.http
       .get(this.baseUrl + 'history?start_at=' + date + '-1&end_at=' + date + '-' + lastDay, params)
       .subscribe(data => {
-        this.thirtyDaysRates = new MonthlyRates(data);
+        this.lastMonthRates = new MonthlyRates(data);
         this.getYesterdayRates();
-        this.monthlyRatesUpdated.next();
+        this.lastMonthRatesUpdated.next();
       });
   }
 
   getYesterdayRates() {
-    if (this.latestRates && this.thirtyDaysRates) {
-      const today = this.latestRates.date;
-      const dates = Object.keys(this.thirtyDaysRates.rates).sort();
-      const index = dates.indexOf(today);
-      const yesterday = dates.length > 1 ? dates[index - 1] : today;
+    const today = this.latestRates.date;
+    const dates = Object.keys(this.lastMonthRates.rates).sort();
+    const index = dates.indexOf(today);
+    const yesterday = dates.length > 1 ? dates[index - 1] : today;
 
-      this.latestRates.yesterdayRates = this.thirtyDaysRates.rates[yesterday];
-      this.yesterdayRatesUpdated.next();
-    }
+    this.latestRates.yesterdayRates = this.lastMonthRates.rates[yesterday];
+    this.yesterdayRatesUpdated.next();
   }
 
   getDaysCount(month: number, year: number) {

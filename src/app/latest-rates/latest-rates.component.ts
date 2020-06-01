@@ -22,7 +22,11 @@ export class LatestRatesComponent {
     return this.latestRates ? Object.keys(this.latestRates.rates) : [];
   }
 
-  constructor(private ratesService: RatesService) {}
+  constructor(private ratesService: RatesService) {
+    if (ratesService.lastMonthRates && ratesService.lastMonthRates.base !== ratesService.currentBase.code) {
+      ratesService.getLastMonthRates();
+    }
+  }
 
   getRateStateImageSrc(currency: string) {
     const todayRate = this.latestRates.rates[currency];

@@ -63,10 +63,10 @@ export class HistoricalChartComponent implements OnInit, OnDestroy {
       this.chartOptions.title.text = currency;
     } else {
       this.isComparingDropdownVisible = true;
-      this.ratesService.getLastThirtyDaysRates(this.comparingCurrency.code);
+      this.ratesService.getLastMonthRates(this.comparingCurrency.code);
     }
 
-    this.ratesService.monthlyRatesUpdated.pipe(takeUntil(this.ngDestroy$)).subscribe(() => {
+    this.ratesService.lastMonthRatesUpdated.pipe(takeUntil(this.ngDestroy$)).subscribe(() => {
       this.getRatesData(currency);
     });
   }
@@ -78,12 +78,12 @@ export class HistoricalChartComponent implements OnInit, OnDestroy {
 
   onBaseDropdownChange(base: Base) {
     this.ratesService.changeBase(base, true);
-    this.ratesService.getLastThirtyDaysRates(this.comparingCurrency.code);
+    this.ratesService.getLastMonthRates(this.comparingCurrency.code);
   }
 
   onCompareDropdownChange(base: Base) {
     this.comparingCurrency = base;
-    this.ratesService.getLastThirtyDaysRates(base.code);
+    this.ratesService.getLastMonthRates(base.code);
   }
 
   getRatesData(currency: string = this.ratesService.currentBase.code) {
