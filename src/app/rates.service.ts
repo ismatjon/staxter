@@ -25,6 +25,11 @@ export class RatesService {
 
   constructor(private http: HttpClient) {}
 
+  /**
+   * Changes currency base and gets rates with it
+   * @param base currency base
+   * @param isComparing boolean flag that indicates that base is changing for comparison and it should not get rates with it
+   */
   changeBase(base: Base, isComparing = false) {
     this.currentBase = base;
     if (!isComparing) {
@@ -32,30 +37,24 @@ export class RatesService {
     }
   }
 
+  /**
+   * Shortcuts method for generating params for HTTP calls
+   * @param base currency base
+   */
   generateParam(base: string) {
     return { params: { base } };
   }
 
+  /**
+   * Fetches rates
+   */
   getRates() {
     this.getLatestRates();
   }
 
-  getCurrencyRatesOutOfMonthlyRates(currency: string) {
-    if (!this.lastMonthRates) {
-      return;
-    }
-
-    const monthlyRates = this.lastMonthRates.rates;
-    const rates = {};
-    for (const date in monthlyRates) {
-      if (monthlyRates.hasOwnProperty(date)) {
-        const rate = monthlyRates[date][currency] || 0;
-        rates[date] = rate === 0 ? rate : rate.toFixed(4);
-      }
-    }
-    return rates;
-  }
-
+  /**
+   * Fetches latest rates
+   */
   getLatestRates() {
     this.http.get(this.baseUrl + 'latest', this.paramsWithCurrentBase).subscribe(data => {
       this.latestRates = new DailyRates(data);
@@ -64,6 +63,10 @@ export class RatesService {
     });
   }
 
+  /**
+   * Fetches last 30 days rates
+   * @param base optional currency base string; if it's not given it'll use this.currencyBase
+   */
   getLastMonthRates(base?: string) {
     if (!this.latestRates) {
       // saving base in order to use it next time the mothod is called
@@ -90,6 +93,29 @@ export class RatesService {
       });
   }
 
+  /**
+   * Gets all the rates in last month for the given currency
+   * @param currency code like "EUR"
+   */
+  getCurrencyRatesOutOfMonthlyRates(currency: string) {
+    if (!this.lastMonthRates) {
+      return;
+    }
+
+    const monthlyRates = this.lastMonthRates.rates;
+    const rates = {};
+    for (const date in monthlyRates) {
+      if (monthlyRates.hasOwnProperty(date)) {
+        const rate = monthlyRates[date][currency] || 0;
+        rates[date] = rate === 0 ? rate : rate.toFixed(4);
+      }
+    }
+    return rates;
+  }
+
+  /**
+   * Gets yesterday rates out of last month rates
+   */
   getYesterdayRates() {
     const today = this.latestRates.date;
     const dates = Object.keys(this.lastMonthRates.rates).sort();
@@ -100,6 +126,11 @@ export class RatesService {
     this.yesterdayRatesUpdated.next();
   }
 
+  /**
+   * Helper method for getting number of days in a given month
+   * @param month
+   * @param year
+   */
   getDaysCount(month: number, year: number) {
     switch (month) {
       case 4:
